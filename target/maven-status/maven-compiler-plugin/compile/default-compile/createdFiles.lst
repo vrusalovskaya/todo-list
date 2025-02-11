@@ -1,0 +1,7 @@
+com\todo\todolist\application\TaskService.class
+com\todo\todolist\TodolistApplication.class
+com\todo\todolist\presentation\TaskDto.class
+com\todo\todolist\presentation\TaskMapper.class
+com\todo\todolist\application\Task.class
+com\todo\todolist\presentation\TaskMapperImpl.class
+com\todo\todolist\presentation\TaskController.class
