@@ -8,6 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 @JsonInclude
 public class TaskDto {
+    private int id;
     private String content;
-    private boolean isCompleted;
+    private boolean completed;
 }

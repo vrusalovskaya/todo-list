@@ -5,7 +5,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-02-11T11:42:22+0300",
+    date = "2025-02-11T22:43:28+0300",
     comments = "version: 1.6.3, compiler: javac, environment: Java 21.0.3 (Oracle Corporation)"
 )
 public class TaskMapperImpl implements TaskMapper {
@@ -16,15 +16,15 @@ public class TaskMapperImpl implements TaskMapper {
             return null;
         }
 
+        int id = 0;
         String content = null;
+        boolean completed = false;
 
+        id = task.getId();
         content = task.getContent();
+        completed = task.isCompleted();
 
-        boolean isCompleted = false;
-
-        TaskDto taskDto = new TaskDto( content, isCompleted );
-
-        taskDto.setCompleted( task.isCompleted() );
+        TaskDto taskDto = new TaskDto( id, content, completed );
 
         return taskDto;
     }
