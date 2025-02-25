@@ -40,13 +40,14 @@ public class TaskDaoImpl implements TaskDao {
 
     @Override
     public List<TaskEntity> getTasks() {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        entityManager.getTransaction().begin();
+        try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
+            entityManager.getTransaction().begin();
 
-        List<TaskEntity> taskEntities = entityManager.createQuery("select t from TaskEntity t", TaskEntity.class).getResultList();
+            List<TaskEntity> taskEntities = entityManager.createQuery("select t from TaskEntity t", TaskEntity.class).getResultList();
 
-        entityManager.getTransaction().commit();
-        return taskEntities;
+            entityManager.getTransaction().commit();
+            return taskEntities;
+        }
     }
 
     @Override
