@@ -25,7 +25,7 @@ class TaskServiceImplTest {
     private TaskDao taskDao;
 
     @InjectMocks
-    private TaskServiceIml taskService;
+    private TaskServiceImpl taskService;
 
     @Test
     void loadDefaultTask_DefaultTaskAdded() {

@@ -10,15 +10,15 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class TaskServiceIml implements TaskService {
-    private static final Logger logger = LogManager.getLogger(TaskServiceIml.class);
+public class TaskServiceImpl implements TaskService {
+    private static final Logger logger = LogManager.getLogger(TaskServiceImpl.class);
 
     private final TaskDao taskDao;
 
     @Value("${task.default}")
     private String defaultTask;
 
-    public TaskServiceIml(TaskDao taskDao) {
+    public TaskServiceImpl(TaskDao taskDao) {
         this.taskDao = taskDao;
     }
 
@@ -30,7 +30,7 @@ public class TaskServiceIml implements TaskService {
 
     public int add(String content) {
         if (content == null || content.isEmpty()) {
-            logger.error("The task was not created due to the absence of the content");
+            logger.info("The task was not created due to the absence of the content");
             throw new IllegalArgumentException("No content provided for task creation");
         }
         return taskDao.add(content);
