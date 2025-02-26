@@ -34,33 +34,29 @@ class TaskServiceImplTest {
 
         taskService.loadDefaultTask();
 
-        verify(taskDao).add(defaultTask);
+        verify(taskDao).createTask(defaultTask);
     }
 
     @Test
     void addTask_Content_TaskCreatedWithGivenContent() {
-        when(taskDao.add(CONTENT)).thenReturn(TASK_ID);
+        when(taskDao.createTask(CONTENT)).thenReturn(TASK_ID);
 
-        int resultId = taskService.add(CONTENT);
+        int resultId = taskService.createTask(CONTENT);
 
         assertEquals(resultId, TASK_ID);
-        verify(taskDao).add(CONTENT);
+        verify(taskDao).createTask(CONTENT);
     }
 
     @Test
     void addTask_NullAsContent_ExceptionThrown() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            taskService.add(null);
-        });
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> taskService.createTask(null));
 
         assertEquals("No content provided for task creation", exception.getMessage());
     }
 
     @Test
     void addTask_EmptyContent_ExceptionThrown() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            taskService.add("");
-        });
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> taskService.createTask(""));
 
         assertEquals("No content provided for task creation", exception.getMessage());
     }
@@ -74,7 +70,6 @@ class TaskServiceImplTest {
 
         var result = taskService.getTasks();
 
-        //можно тут маппить?
         assertEquals(result, taskEntities.stream().map(TaskMapper.INSTANCE::toModel).toList());
         verify(taskDao).getTasks();
     }
@@ -91,21 +86,21 @@ class TaskServiceImplTest {
 
     @Test
     void updateStatus_StatusFalse_StatusOfTaskIsUpdatedToTrue() {
-        when(taskDao.updateStatus(TASK_ID, true)).thenReturn(true);
+        when(taskDao.updateTaskStatus(TASK_ID, true)).thenReturn(true);
 
-        boolean result = taskService.updateStatus(TASK_ID, true);
+        boolean result = taskService.updateTaskStatus(TASK_ID, true);
 
         assertTrue(result);
-        verify(taskDao).updateStatus(TASK_ID, true);
+        verify(taskDao).updateTaskStatus(TASK_ID, true);
     }
 
     @Test
     void updateStatus_InvalidTaskId_ReturnsFalse() {
-        when(taskDao.updateStatus(99, true)).thenReturn(false);
+        when(taskDao.updateTaskStatus(99, true)).thenReturn(false);
 
-        boolean result = taskService.updateStatus(99, true);
+        boolean result = taskService.updateTaskStatus(99, true);
 
         assertFalse(result);
-        verify(taskDao).updateStatus(99, true);
+        verify(taskDao).updateTaskStatus(99, true);
     }
 }

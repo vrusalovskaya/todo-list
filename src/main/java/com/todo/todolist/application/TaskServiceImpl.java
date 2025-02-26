@@ -24,24 +24,23 @@ public class TaskServiceImpl implements TaskService {
 
     @PostConstruct
     public void loadDefaultTask() {
-        add(defaultTask);
+        createTask(defaultTask);
     }
 
-
-    public int add(String content) {
+    public int createTask(String content) {
         if (content == null || content.isEmpty()) {
             logger.info("The task was not created due to the absence of the content");
             throw new IllegalArgumentException("No content provided for task creation");
         }
-        return taskDao.add(content);
+        return taskDao.createTask(content);
     }
 
     public List<Task> getTasks() {
         return taskDao.getTasks().stream().map(TaskMapper.INSTANCE::toModel).toList();
     }
 
-    public boolean updateStatus(int id, boolean completed) {
-        return taskDao.updateStatus(id, completed);
+    public boolean updateTaskStatus(int id, boolean completed) {
+        return taskDao.updateTaskStatus(id, completed);
     }
 
 }

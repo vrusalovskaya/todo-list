@@ -1,7 +1,6 @@
 package com.todo.todolist.presentation;
 
 import com.todo.todolist.application.TaskService;
-import com.todo.todolist.persistence.TaskDaoImpl;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,17 +26,16 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> addTask(@RequestBody String content) {
-        int id = taskService.add(content);
+    public ResponseEntity<Void> createTask(@RequestBody TaskCreateRequest createDto) { // dto
+        int id = taskService.createTask(createDto.getContent());
         URI location = URI.create(String.format("/api/v1/tasks/%d", id));
         logger.info(String.format( "New task created: " + location));
         return ResponseEntity.created(location).build();
     }
 
-
     @PatchMapping("/{id}")
-    public ResponseEntity<String> updateTaskStatus(@PathVariable int id, @RequestBody TaskUpdateRequest request) {
-        if (taskService.updateStatus(id, request.isCompleted())) {
+    public ResponseEntity<String> updateTaskStatus(@PathVariable int id, @RequestBody TaskUpdateRequest updateDto) {
+        if (taskService.updateTaskStatus(id, updateDto.isCompleted())) {
             return ResponseEntity.ok("Task status updated successfully");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task for updating not found");

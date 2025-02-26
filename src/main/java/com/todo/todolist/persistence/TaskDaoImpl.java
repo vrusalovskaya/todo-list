@@ -18,74 +18,66 @@ public class TaskDaoImpl implements TaskDao {
     private final EntityManagerFactory entityManagerFactory;
 
     @Override
-    public int add(String content) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
+    public int createTask(String content) {
+        try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
+            try {
+                entityManager.getTransaction().begin();
 
-        try {
-            entityManager.getTransaction().begin();
+                TaskEntity taskEntity = new TaskEntity();
+                taskEntity.setContent(content);
 
-            TaskEntity taskEntity = new TaskEntity();
-            taskEntity.setContent(content);
+                entityManager.persist(taskEntity);
 
-            entityManager.persist(taskEntity);
+                entityManager.getTransaction().commit();
+                logger.info(String.format("Task with \"%s\" content was saved to the database", content));
 
-            entityManager.getTransaction().commit();
-            logger.info(String.format("Task with \" %s \" content was saved to the database", content));
-
-            return taskEntity.getId();
-        } catch (Exception e) {
-            if (entityManager.getTransaction().isActive()) {
-                entityManager.getTransaction().rollback();
-                logger.info("Saving transaction was rolled back");
+                return taskEntity.getId();
+            } catch (Exception e) {
+                if (entityManager.getTransaction().isActive()) {
+                    entityManager.getTransaction().rollback();
+                    logger.info("Saving transaction was rolled back");
+                }
+                throw e;
             }
-            throw e;
-        } finally {
-            entityManager.close();
         }
     }
 
     @Override
     public List<TaskEntity> getTasks() {
         try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
-            entityManager.getTransaction().begin();
-
             List<TaskEntity> taskEntities = entityManager.createQuery("select t from TaskEntity t", TaskEntity.class).getResultList();
-
-            entityManager.getTransaction().commit();
             logger.info("List of tasks was retrieved from the database");
             return taskEntities;
         }
     }
 
     @Override
-    public boolean updateStatus(int id, boolean completed) {
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
+    public boolean updateTaskStatus(int id, boolean completed) {
+        try (EntityManager entityManager = entityManagerFactory.createEntityManager()) {
+            try {
+                entityManager.getTransaction().begin();
 
-        try {
-            entityManager.getTransaction().begin();
+                TaskEntity taskEntity = entityManager.find(TaskEntity.class, id);
 
-            TaskEntity taskEntity = entityManager.find(TaskEntity.class, id);
+                if (taskEntity == null) {
+                    return false;
+                }
 
-            if (taskEntity == null) {
-                return false;
+                taskEntity.setCompleted(completed);
+
+                entityManager.merge(taskEntity);
+
+                entityManager.getTransaction().commit();
+                logger.info(String.format("The status of the task with id \" %s \" was changed to \" %s \"", id, completed));
+
+                return true;
+            } catch (Exception e) {
+                if (entityManager.getTransaction().isActive()) {
+                    entityManager.getTransaction().rollback();
+                    logger.info("Updating transaction was rolled back");
+                }
+                throw e;
             }
-
-            taskEntity.setCompleted(completed);
-
-            entityManager.merge(taskEntity);
-
-            entityManager.getTransaction().commit();
-            logger.info(String.format("The status of the task with id \" %s \" was changed to \" %s \"", id, completed));
-
-            return true;
-        } catch (Exception e) {
-            if (entityManager.getTransaction().isActive()) {
-                entityManager.getTransaction().rollback();
-                logger.info("Updating transaction was rolled back");
-            }
-            throw e;
-        } finally {
-            entityManager.close();
         }
     }
 }

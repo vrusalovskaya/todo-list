@@ -4,7 +4,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
-import jakarta.validation.constraints.AssertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -48,7 +47,7 @@ class TaskDaoImplTest {
             return null;
         }).when(entityManager).persist(any(TaskEntity.class));
 
-        int resultId = taskDao.add(CONTENT);
+        int resultId = taskDao.createTask(CONTENT);
 
         assertEquals(TASK_ID, resultId);
         verify(entityTransaction).begin();
@@ -63,7 +62,7 @@ class TaskDaoImplTest {
         when(entityManager.getTransaction().isActive()).thenReturn(true);
         doThrow(new RuntimeException("Test exception")).when(entityManager).persist(any(TaskEntity.class));
 
-        assertThrows(RuntimeException.class, () -> taskDao.add(CONTENT));
+        assertThrows(RuntimeException.class, () -> taskDao.createTask(CONTENT));
         verify(entityTransaction).rollback();
         verify(entityTransaction, never()).commit();
         verify(entityManager).close();
@@ -76,7 +75,7 @@ class TaskDaoImplTest {
         when(entityManager.getTransaction().isActive()).thenReturn(false);
         doThrow(new RuntimeException("Test exception")).when(entityManager).persist(any(TaskEntity.class));
 
-        assertThrows(RuntimeException.class, () -> taskDao.add(CONTENT));
+        assertThrows(RuntimeException.class, () -> taskDao.createTask(CONTENT));
         verify(entityTransaction, never()).rollback();
         verify(entityManager).close();
     }
@@ -87,7 +86,6 @@ class TaskDaoImplTest {
         TaskEntity task2 = new TaskEntity(2, "Task 2", true);
         List<TaskEntity> mockTasks = Arrays.asList(task1, task2);
         when(entityManagerFactory.createEntityManager()).thenReturn(entityManager);
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.createQuery("select t from TaskEntity t", TaskEntity.class)).thenReturn(query);
         when(query.getResultList()).thenReturn(mockTasks);
 
@@ -95,23 +93,18 @@ class TaskDaoImplTest {
 
         assertEquals(mockTasks.size(), result.size());
         assertEquals(mockTasks, result);
-        verify(entityTransaction).begin();
-        verify(entityTransaction).commit();
         verify(entityManager).close();
     }
 
     @Test
     void getTasks_NoTasksInDb_EmptyListReturned() {
         when(entityManagerFactory.createEntityManager()).thenReturn(entityManager);
-        when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.createQuery("select t from TaskEntity t", TaskEntity.class)).thenReturn(query);
         when(query.getResultList()).thenReturn(Collections.emptyList());
 
         List<TaskEntity> result = taskDao.getTasks();
 
         assertTrue(result.isEmpty());
-        verify(entityTransaction).begin();
-        verify(entityTransaction).commit();
         verify(entityManager).close();
     }
 
@@ -122,7 +115,7 @@ class TaskDaoImplTest {
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.find(TaskEntity.class, TASK_ID)).thenReturn(testedTask);
 
-        boolean result = taskDao.updateStatus(TASK_ID, true);
+        boolean result = taskDao.updateTaskStatus(TASK_ID, true);
 
         assertTrue(result);
         assertTrue(testedTask.isCompleted());
@@ -137,7 +130,7 @@ class TaskDaoImplTest {
         when(entityManager.getTransaction()).thenReturn(entityTransaction);
         when(entityManager.find(TaskEntity.class, TASK_ID)).thenReturn(null);
 
-        boolean result = taskDao.updateStatus(TASK_ID, true);
+        boolean result = taskDao.updateTaskStatus(TASK_ID, true);
 
         assertFalse(result);
         verify(entityTransaction).begin();
@@ -153,7 +146,7 @@ class TaskDaoImplTest {
         when(entityManager.getTransaction().isActive()).thenReturn(true);
         doThrow(new RuntimeException("Test exception")).when(entityManager).merge(any(TaskEntity.class));
 
-        assertThrows(RuntimeException.class, () -> taskDao.updateStatus(TASK_ID, true));
+        assertThrows(RuntimeException.class, () -> taskDao.updateTaskStatus(TASK_ID, true));
         verify(entityTransaction).rollback();
         verify(entityManager).close();
     }
