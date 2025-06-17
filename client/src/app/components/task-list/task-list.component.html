@@ -1,0 +1,5 @@
+@for (task of tasks; track task.id) {
+<div class="task">
+    <td-task [task]=task (statusChange)="onTaskStatusChange(task)"></td-task>
+</div>
+}

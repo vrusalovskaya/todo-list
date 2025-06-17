@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/tasks")
+//@CrossOrigin(origins = "http://localhost:4200")
 @AllArgsConstructor
 public class TaskController {
 
@@ -26,17 +27,17 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createTask(@RequestBody TaskCreateRequest createDto) { // dto
+    public ResponseEntity<Integer> createTask(@RequestBody TaskCreateRequest createDto) { // dto
         int id = taskService.createTask(createDto.getContent());
         URI location = URI.create(String.format("/api/v1/tasks/%d", id));
         logger.info(String.format( "New task created: " + location));
-        return ResponseEntity.created(location).build();
+        return ResponseEntity.created(location).body(id);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> updateTaskStatus(@PathVariable int id, @RequestBody TaskUpdateRequest updateDto) {
         if (taskService.updateTaskStatus(id, updateDto.isCompleted())) {
-            return ResponseEntity.ok("Task status updated successfully");
+            return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task for updating not found");
         }

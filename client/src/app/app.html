@@ -1,0 +1,5 @@
+<h2 class="title">To Do List</h2>
+<div class="center">
+  <button matButton="filled" (click)="onAddTaskClicked()" >Add Task</button>
+</div>
+<td-task-list [tasks]="tasks" (taskStatusChange)="onTaskStatusChange($event)"></td-task-list>

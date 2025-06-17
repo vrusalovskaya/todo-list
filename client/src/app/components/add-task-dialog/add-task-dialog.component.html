@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Add Task</h2>
+
+<mat-dialog-content>
+   <p>Specify the content of the task</p>
+   <mat-form-field class="full-width">
+      <mat-label>Content</mat-label>
+      <textarea required matInput #content maxlength="256"></textarea>
+      <mat-hint align="end">{{content.value.length}} / 256</mat-hint>
+   </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+   <button matButton [mat-dialog-close]="undefined">Close</button>
+   <button matButton cdkFocusInitial [disabled]="content.value.length === 0"
+      (click)="onContentSubmitClick(content.value)">Add</button>
+</mat-dialog-actions>

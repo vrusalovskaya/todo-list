@@ -1,0 +1,17 @@
+<mat-card>
+
+    <mat-card-header>
+        <mat-card-title [class.crossed]="task.completed">{{task.id}}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content [class.crossed]="task.completed">
+        <p>{{task.content}}</p>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+        <button matButton (click)="onStatusChangeButtonClicked()">
+            Mark as {{task.completed ? 'undone' : 'done'}}
+        </button>
+    </mat-card-actions>
+
+</mat-card>
